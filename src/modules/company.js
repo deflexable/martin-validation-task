@@ -1,9 +1,9 @@
-import { collection } from "../database";
-import db_path from "../database/db_path";
-import { randomString } from "../utils/utils";
-import { isEmptyString } from "../utils/validator";
-import { ROLE } from "../utils/values";
-import { register } from "./auth";
+import { collection } from "../database/index.js";
+import db_path from "../database/db_path.js";
+import { randomString } from "../utils/utils.js";
+import { isEmptyString } from "../utils/validator.js";
+import { ROLE } from "../utils/values.js";
+import { register } from "./auth.js";
 
 export const createCompany = async ({ name, tenant_id, username, password, metadata }) => {
     if (isEmptyString(username)) throw `username must be a trimmed non-empty string but got "${username}"`;

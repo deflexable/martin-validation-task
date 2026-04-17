@@ -1,9 +1,9 @@
 import { hash, verify } from "argon2";
-import { collection } from "../database"
-import db_path from "../database/db_path"
+import { collection } from "../database/index.js"
+import db_path from "../database/db_path.js"
 import jwtPkg from 'jsonwebtoken';
-import { API_URL, PROJECT_NAME, SIGNER_KEY, TOKEN_EXPIRY_SECONDS } from "../../env";
-import { isEmptyString } from "../utils/validator";
+import { API_URL, PROJECT_NAME, SIGNER_KEY, TOKEN_EXPIRY_SECONDS } from "../../env.js";
+import { isEmptyString } from "../utils/validator.js";
 
 /**
  * This function only register a user and write their credentials and data into the database
@@ -27,13 +27,14 @@ export const login = async ({ username, password }) => {
     if (isEmptyString(password)) throw `password must be a trimmed non-empty string but got "${password}"`;
 
     const userData = await collection(db_path.users).findOne({ _id: username });
+    if (!userData) throw 'account does not exist';
     const matchedPassword = await verify(userData.password, password);
 
     if (!matchedPassword) throw 'incorrect password';
 
     const token = await new Promise((resolve, reject) => {
         jwtPkg.sign({
-            exp: TOKEN_EXPIRY_SECONDS,
+            exp: Date.now() + TOKEN_EXPIRY_SECONDS,
             aud: PROJECT_NAME,
             iss: API_URL,
             sub: username,

@@ -1,7 +1,7 @@
-import { collection } from "../database";
-import db_path from "../database/db_path";
-import { isEmptyString } from "../utils/validator";
-import { getCompany } from "./company";
+import { collection } from "../database/index.js";
+import db_path from "../database/db_path.js";
+import { isEmptyString } from "../utils/validator.js";
+import { getCompany } from "./company.js";
 
 export const createEmployee = async ({ id, name, tenant_id, metadata }) => {
     if (isEmptyString(id)) throw `id must be a trimmed non-empty string but got "${id}"`;
@@ -10,6 +10,7 @@ export const createEmployee = async ({ id, name, tenant_id, metadata }) => {
 
     if (!(await getCompany(tenant_id))) throw `company with tenant_id=${tenant_id} does not exist`;
 
+    console.log('creating:', tenant_id);
     await collection(db_path.employees).insertOne({
         _id: `${tenant_id} ${id}`,
         name,
@@ -17,6 +18,7 @@ export const createEmployee = async ({ id, name, tenant_id, metadata }) => {
         created_on: Date.now(),
         metadata
     });
+    console.log('finished:', tenant_id);
 }
 
 export const getEmployee = (id) => {

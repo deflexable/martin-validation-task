@@ -1,14 +1,16 @@
 import express, { json, text } from "express";
-import { ADMIN_PASSWORD, ADMIN_USERNAME, API_PORT, API_URL } from "../env";
-import { createCompany, getCompany, listCompanies } from "./modules/company";
-import { createEmployee, getEmployee, listEmployees } from "./modules/employee";
-import { login, register, validateToken } from "./modules/auth";
-import { ROLE } from "./utils/values";
+import { ADMIN_PASSWORD, ADMIN_USERNAME, API_PORT, API_URL } from "../env.js";
+import { createCompany, getCompany, listCompanies } from "./modules/company.js";
+import { createEmployee, getEmployee, listEmployees } from "./modules/employee.js";
+import { login, register, validateToken } from "./modules/auth.js";
+import { ROLE } from "./utils/values.js";
+import morgan from "morgan";
 
 const app = express();
 app.disable("x-powered-by");
 
 [
+    morgan(),
     json({ type: '*/json', limit: '100MB' }),
     text({ type: 'text/plain', limit: '100MB' })
 ].forEach(e => {
@@ -27,7 +29,7 @@ const handleRouter = (callback, authenticator) => async (req, res) => {
         if (authenticator) await authenticator?.(req);
 
         const result = await callback?.(req, res);
-        if (result !== undefined) {
+        if (result !== undefined || !res.headersSent) {
             res.status(200).send({ result });
         }
     } catch (error) {
@@ -44,7 +46,7 @@ const adminRegPromise = register({
     username: ADMIN_USERNAME,
     password: ADMIN_PASSWORD,
     claims: { role: ROLE.ADMIN }
-});
+}).catch(() => null);
 
 const AUTH_VALIDATOR = {
     ADMIN: async token => {
@@ -53,7 +55,7 @@ const AUTH_VALIDATOR = {
     },
     COMPANY: async (token, tenant_id) => {
         if (!tenant_id) throw `invalid tenant_id=${tenant_id}`;
-        
+
         const tokenData = await validateToken(token);
         if (
             tokenData.claims.role !== ROLE.ADMIN &&
@@ -121,10 +123,10 @@ app.use(
 // list employee
 app.use(
     router.get(
-        '/company/employees',
+        '/company/employees/:tenant_id',
         handleRouter(req =>
-            listEmployees(req.query?.tenant_id, req.query?.limit, req.query?.skip),
-            req => AUTH_VALIDATOR.COMPANY(req.headers.token, req.query?.tenant_id)
+            listEmployees(req.params?.tenant_id, req.query?.limit, req.query?.skip),
+            req => AUTH_VALIDATOR.COMPANY(req.headers.token, req.params?.tenant_id)
         )
     )
 );

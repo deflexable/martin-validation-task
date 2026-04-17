@@ -129,7 +129,7 @@ Create an employee
 #### Notes:
 Employee must belong to a valid tenant_id
 
-### GET `/company/employees`
+### GET `/company/employees/:tenant_id`
 
 List employees in a company
 
@@ -141,7 +141,6 @@ List employees in a company
 #### Query Params
 ```json
 {
-    "tenant_id": "string (required)",
     "limit": number (optional),
     "skip": number (optional)
 }
