@@ -1,0 +1,30 @@
+{
+  "name": "martin-validation-task",
+  "version": "1.0.0",
+  "description": "Validation task for Martin Hovland",
+  "homepage": "https://github.com/deflexable/martin-validation-task#readme",
+  "bugs": {
+    "url": "https://github.com/deflexable/martin-validation-task/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deflexable/martin-validation-task.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10"
+  }
+}
